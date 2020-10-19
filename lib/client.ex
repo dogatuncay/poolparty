@@ -12,9 +12,13 @@ defmodule Client do
     {:ok, pid}
   end
 
+  def multiply(list, multiplier) do
+    Enum.map(list, &(&1 * multiplier))
+  end
+
   def run() do
     pid = Process.whereis(PoolServer)
-    GenServer.call(pid, {:do_work, [1, 2, 3]})
+    GenServer.call(pid, {:do_work, fn multiplier -> multiply([1,2,3], multiplier) end})
 
     receive do
       {:work_completed, result} ->

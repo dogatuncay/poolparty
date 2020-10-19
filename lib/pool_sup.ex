@@ -5,11 +5,11 @@ defmodule PoolSup do
     Supervisor.start_link(__MODULE__, init, name: __MODULE__)
   end
 
-  def init(n) do
+  def init({n, init_state}) do
     strategy = :one_for_all
 
     worker_children = Enum.map(1..n, fn index ->
-      Supervisor.child_spec({PoolWorker, index}, %{ id: index})
+      Supervisor.child_spec({PoolWorker, {index, init_state}}, %{ id: index})
     end)
 
     children = [{PoolServer, "hello"} | worker_children]

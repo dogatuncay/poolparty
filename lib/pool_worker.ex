@@ -6,23 +6,24 @@ defmodule PoolWorker do
   end
 
   @impl true
-  def init(id) do
+  def init({id, init_state}) do
     pid = Process.whereis(PoolServer)
     GenServer.call(pid, {:register, id})
-    {:ok, []}
+    state = init_state.()
+    {:ok, state}
   end
 
   @impl true
-  def handle_cast({:submit_work, list}, state) do
+  def handle_cast({:submit_work, f}, state) do
     pid = Process.whereis(PoolServer)
-    result = do_work(list)
+    result = do_work(f, state)
     GenServer.cast(pid, {:worker_finished, result, self()})
     {:noreply, state}
   end
 
-  def do_work(list) do
+  def do_work(f, state) do
     :timer.sleep(5000)
-    Enum.sum(list)
+    f.(state)
   end
 
 end

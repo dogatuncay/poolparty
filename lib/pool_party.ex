@@ -5,7 +5,7 @@ defmodule PoolParty do
     strategy = :one_for_all
 
     children = [
-      {PoolSup, 50},
+      {PoolSup, {50, fn -> 2 end}},
       {Client, []}
     ]
 
